@@ -22,10 +22,15 @@ extern uint8_t is_master;
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
 #define _BASE 0
-#define _WIN 1
 #define _LOWER 3
 #define _RAISE 4
 #define _ADJUST 16
+
+// os mode values
+#define _MAC 0
+#define _WIN 1
+
+int current_os = _MAC;
 
 enum custom_keycodes
 {
@@ -35,17 +40,20 @@ enum custom_keycodes
   ADJUST,
   BACKLIT,
   RGBRST,
-  WINMAC,
-};
-
-enum macro_keycodes
-{
-  KC_SAMPLEMACRO,
+  WINMODE,
+  MACMODE,
+  IMEON,
+  IMEOFF,
+  OSMOD,
 };
 
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
-#define KC_WINMAC WINMAC
+#define KC_WINMODE WINMODE
+#define KC_MACMODE MACMODE
+#define KC_IMEON IMEON
+#define KC_IMEOFF IMEOFF
+#define KC_OSMOD OSMOD
 #define KC_LOWER LOWER
 #define KC_RAISE RAISE
 #define KC_RST RESET
@@ -67,31 +75,25 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         TAB, Q, W, E, R, T, Y, U, I, O, P, LBRC /*JP_AT*/,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, INT1,
-        GUIEI, LOWER, SPC, ENT, RAISE, RALT),
-
-    [_WIN] = LAYOUT_kc(
-        TAB, Q, W, E, R, T, Y, U, I, O, P, LBRC /*JP_AT*/,
-        CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
-        LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, INT1,
-        CTLTB, LOWER, SPC, ENT, RAISE, RALT),
+        OSMOD, LOWER, SPC, ENT, RAISE, RALT),
 
     [_LOWER] = LAYOUT_kc(
-        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, BSPC,
-        CTLTB, F1, F2, F3, F4, F5, F6, F7, F8, F9, F10, XXXXX,
-        LSFT, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, XXXXX,
-        _____, LOWER, SPC, BSPC, RAISE, INT4),
+        _____, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
+        _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LEFT, DOWN, UP, RGHT, GRV, ESC,
+        _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, UNDS, PLUS, LBRC, RBRC, BSLS, TILD,
+        _____, LOWER, SPC, BSPC, RAISE, IMEON),
 
     [_RAISE] = LAYOUT_kc(
-        ESC, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
-        CTLTB, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LEFT, DOWN, UP, RGHT, GRV, ESC,
-        LSFT, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, UNDS, PLUS, LBRC, RBRC, BSLS, TILD,
-        INT5, LOWER, DEL, ENT, RAISE, RALT),
+        _____, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
+        _____, F1, F2, F3, F4, LBRC, LPRN, RPRN, RBRC, F9, F10, XXXXX,
+        _____, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, XXXXX,
+        IMEOFF, LOWER, DEL, ENT, RAISE, _____),
 
     [_ADJUST] = LAYOUT_kc(
-        RST, LRST, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
-        LTOG, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
-        LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, WINMAC,
-        GUIEI, LOWER, SPC, ENT, RAISE, ALTKN)};
+        _____, LRST, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
+        _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
+        WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
+        _____, LOWER, SPC, ENT, RAISE, _____)};
 
 int RGB_current_mode;
 
@@ -181,6 +183,9 @@ void iota_gfx_task_user(void)
 }
 #endif //SSD1306OLED
 
+#define OS_DEPENDED_KEY(r, w, m) ( \
+    (current_os == _WIN) ? (r->event.pressed ? SEND_STRING(SS_DOWN(w)) : SEND_STRING(SS_UP(w))) : (r->event.pressed ? SEND_STRING(SS_DOWN(m)) : SEND_STRING(SS_UP(m))))
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
   if (record->event.pressed)
@@ -193,13 +198,7 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
 
   switch (keycode)
   {
-  case WINMAC:
-    if (record->event.pressed)
-    {
-      persistent_default_layer_set(1UL << _WIN);
-    }
-    return false;
-    break;
+
   case LOWER:
     if (record->event.pressed)
     {
@@ -237,6 +236,33 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     }
     return false;
     break;
+  case WINMODE:
+    if (record->event.pressed)
+    {
+      current_os = _WIN;
+    }
+    return false;
+    break;
+  case MACMODE:
+    if (record->event.pressed)
+    {
+      current_os = _MAC;
+    }
+    return false;
+    break;
+  case OSMOD: // command or ctrl
+    OS_DEPENDED_KEY(record, X_LCTRL, X_LGUI);
+    return false;
+    break;
+  case IMEON: // henkan or kana
+    OS_DEPENDED_KEY(record, X_INT4, X_LANG1);
+    return false;
+    break;
+  case IMEOFF: // muhenkan or eisuu
+    OS_DEPENDED_KEY(record, X_INT5, X_LANG2);
+    return false;
+    break;
+
   case RGB_MOD:
 #ifdef RGBLIGHT_ENABLE
     if (record->event.pressed)
