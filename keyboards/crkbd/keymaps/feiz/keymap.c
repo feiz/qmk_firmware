@@ -1,6 +1,7 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
 #include "keymap_jp.h"
+#include "mouse.h"
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
 #include "split_util.h"
@@ -86,9 +87,9 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         OSMOD, LOWER, SPC, ENT, RAISE, RALT),
 
     [_LOWER] = LAYOUT_kc(
-        ESC, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
-        _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LEFT, DOWN, UP, RGHT, GRV, ESC,
-        _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PLUS, LBRC, RBRC, BSLS, TILD,
+        ESC, XXXXX, XXXXX, MS_UP, XXXXX, XXXXX, MS_BTN3, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
+        _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
+        _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
         _____, LOWER, SPC, ENT, RAISE, IMEON),
     // !"#$%&'()0=^~\`[]
     [_RAISE] = LAYOUT_kc(
