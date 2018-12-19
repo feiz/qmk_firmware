@@ -78,13 +78,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         OSMOD, LOWER, SPC, ENT, RAISE, RALT),
 
     [_LOWER] = LAYOUT_kc(
-        _____, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
+        ESC, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LEFT, DOWN, UP, RGHT, GRV, ESC,
-        _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, UNDS, PLUS, LBRC, RBRC, BSLS, TILD,
+        _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PLUS, LBRC, RBRC, BSLS, TILD,
         _____, LOWER, SPC, BSPC, RAISE, IMEON),
-
+    // !"#$%&'()0=^~\`[]
     [_RAISE] = LAYOUT_kc(
-        _____, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
+        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
         _____, F1, F2, F3, F4, LBRC, LPRN, RPRN, RBRC, F9, F10, XXXXX,
         _____, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, XXXXX,
         IMEOFF, LOWER, DEL, ENT, RAISE, _____),
@@ -183,8 +183,34 @@ void iota_gfx_task_user(void)
 }
 #endif //SSD1306OLED
 
-#define OS_DEPENDED_KEY(r, w, m) ( \
-    (current_os == _WIN) ? (r->event.pressed ? SEND_STRING(SS_DOWN(w)) : SEND_STRING(SS_UP(w))) : (r->event.pressed ? SEND_STRING(SS_DOWN(m)) : SEND_STRING(SS_UP(m))))
+bool os_depend_key(keyrecord_t *record, uint16_t win_keycode, uint16_t mac_keycode)
+{
+  uint16_t kc;
+  if (current_os == _WIN)
+  {
+    kc = win_keycode;
+  }
+  else if (current_os == _MAC)
+  {
+    kc = mac_keycode;
+  }
+  else
+  {
+    return true;
+  }
+
+  if (record->event.pressed)
+  {
+    register_code(kc);
+    return false;
+  }
+  else
+  {
+    unregister_code(kc);
+    return false;
+  }
+  return true;
+}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -251,16 +277,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
     return false;
     break;
   case OSMOD: // command or ctrl
-    OS_DEPENDED_KEY(record, X_LCTRL, X_LGUI);
-    return false;
+    os_depend_key(record, KC_LCTRL, KC_LGUI);
     break;
   case IMEON: // henkan or kana
-    OS_DEPENDED_KEY(record, X_INT4, X_LANG1);
-    return false;
+    return os_depend_key(record, KC_INT4, KC_LANG1);
     break;
   case IMEOFF: // muhenkan or eisuu
-    OS_DEPENDED_KEY(record, X_INT5, X_LANG2);
-    return false;
+    return os_depend_key(record, KC_INT5, KC_LANG2);
     break;
 
   case RGB_MOD:
