@@ -1,5 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
+#include "keymap_jp.h"
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
 #include "split_util.h"
@@ -69,10 +70,17 @@ enum custom_keycodes
 #define KC_CTLTB CTL_T(KC_TAB)
 #define KC_GUIEI GUI_T(KC_LANG2)
 #define KC_ALTKN ALT_T(KC_LANG1)
+#define KC_JP_AT JP_AT
+#define KC_JP_LBRC JP_LBRC
+#define KC_JP_RBRC JP_RBRC
+#define KC_JP_LPRN JP_LPRN
+#define KC_JP_RPRN JP_RPRN
+#define KC_JP_DQT JP_DQT
+#define KC_JP_QUOT JP_QUOT
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
-        TAB, Q, W, E, R, T, Y, U, I, O, P, LBRC /*JP_AT*/,
+        TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, INT1,
         OSMOD, LOWER, SPC, ENT, RAISE, RALT),
@@ -81,13 +89,13 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         ESC, EXLM, AT, HASH, DLR, PERC, CIRC, AMPR, ASTR, LPRN, RPRN, BSPC,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, LEFT, DOWN, UP, RGHT, GRV, ESC,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PLUS, LBRC, RBRC, BSLS, TILD,
-        _____, LOWER, SPC, BSPC, RAISE, IMEON),
+        _____, LOWER, SPC, ENT, RAISE, IMEON),
     // !"#$%&'()0=^~\`[]
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
-        _____, F1, F2, F3, F4, LBRC, LPRN, RPRN, RBRC, F9, F10, XXXXX,
-        _____, F11, F12, F13, F14, F15, F16, F17, F18, F19, F20, XXXXX,
-        IMEOFF, LOWER, DEL, ENT, RAISE, _____),
+        _____, XXXXX, XXXXX, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, XXXXX, XXXXX,
+        _____, EXLM, XXXXX, HASH, DLR, PERC, CIRC, AMPR, XXXXX, XXXXX, XXXXX, XXXXX,
+        IMEOFF, LOWER, SPC, ENT, RAISE, _____),
 
     [_ADJUST] = LAYOUT_kc(
         _____, LRST, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
