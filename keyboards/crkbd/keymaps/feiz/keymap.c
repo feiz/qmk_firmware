@@ -1,7 +1,6 @@
 #include QMK_KEYBOARD_H
 #include "bootloader.h"
 #include "keymap_jp.h"
-#include "mouse.h"
 #ifdef PROTOCOL_LUFA
 #include "lufa.h"
 #include "split_util.h"
@@ -49,6 +48,7 @@ enum custom_keycodes
   OSMOD,
 };
 
+#define KC_RESET RESET
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
 #define KC_WINMODE WINMODE
@@ -87,7 +87,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         OSMOD, LOWER, SPC, ENT, RAISE, RALT),
 
     [_LOWER] = LAYOUT_kc(
-        ESC, XXXXX, XXXXX, MS_UP, XXXXX, XXXXX, MS_BTN3, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
+        ESC, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN3, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
         _____, LOWER, SPC, ENT, RAISE, IMEON),
@@ -99,7 +99,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         IMEOFF, LOWER, SPC, ENT, RAISE, _____),
 
     [_ADJUST] = LAYOUT_kc(
-        _____, LRST, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
+        _____, LRST, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
         _____, LOWER, SPC, ENT, RAISE, _____)};
