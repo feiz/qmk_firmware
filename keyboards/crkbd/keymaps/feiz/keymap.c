@@ -48,6 +48,12 @@ enum custom_keycodes
   OSMOD,
 };
 
+enum {
+  TD_LOWER_IMEOFF = 0,
+  TD_RAISE_IMEON,
+  TD_AB,
+};
+
 #define KC_RESET RESET
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
@@ -79,33 +85,37 @@ enum custom_keycodes
 #define KC_JP_DQT JP_DQT
 #define KC_JP_QUOT JP_QUOT
 #define KC_JP_UNDS LSFT(KC_INT1)
+#define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
         TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, JP_UNDS,
-        OSMOD, LOWER, SPC, ENT, RAISE, RALT),
+        OSMOD, LOWER, SPC, ENT, RAISE_IMEON, RALT),
 
     [_LOWER] = LAYOUT_kc(
         ESC, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
-        _____, LOWER, SPC, ENT, RAISE, IMEON),
+        _____, LOWER, SPC, ENT, _____, IMEON),
     // !"#$%&'()0=^~\`[]
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
         _____, XXXXX, XXXXX, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, XXXXX, XXXXX,
         _____, EXLM, XXXXX, HASH, DLR, PERC, CIRC, AMPR, XXXXX, XXXXX, XXXXX, XXXXX,
-        IMEOFF, LOWER, SPC, ENT, RAISE, _____),
+        IMEOFF, LOWER, SPC, ENT, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
         _____, LRST, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
-        _____, LOWER, SPC, ENT, RAISE, _____)};
+        _____, LOWER, SPC, ENT, _____, _____)};
 
-
+qk_tap_dance_action_t tap_dance_actions[] = {
+  //[TD_LOWER_IMEOFF] = 
+  [TD_RAISE_IMEON] = ACTION_TAP_DANCE_DOUBLE(KC_C, KC_B)
+};
 
 int RGB_current_mode;
 

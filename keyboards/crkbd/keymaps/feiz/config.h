@@ -1,7 +1,7 @@
 /*
 This is the c configuration file for the keymap
 
-Copyright 2012 Jun Wako <wakojun@gmail.com>
+Copyrighun@gmail.com>
 Copyright 2015 Jack Humbert
 
 This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_SERIAL_PD2
 
 #define TAPPING_FORCE_HOLD
-#define TAPPING_TERM 100
+#define TAPPING_TERM 200
 
 #define SSD1306OLED
 
