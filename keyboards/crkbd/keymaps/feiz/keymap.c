@@ -78,12 +78,13 @@ enum custom_keycodes
 #define KC_JP_RPRN JP_RPRN
 #define KC_JP_DQT JP_DQT
 #define KC_JP_QUOT JP_QUOT
+#define KC_JP_UNDS LSFT(KC_INT1)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
         TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
-        LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, INT1,
+        LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, JP_UNDS,
         OSMOD, LOWER, SPC, ENT, RAISE, RALT),
 
     [_LOWER] = LAYOUT_kc(
@@ -103,6 +104,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
         _____, LOWER, SPC, ENT, RAISE, _____)};
+
+
 
 int RGB_current_mode;
 
