@@ -51,7 +51,7 @@ enum custom_keycodes
 enum {
   TD_LOWER_IMEOFF = 0,
   TD_RAISE_IMEON,
-  TD_AB,
+  TD_SALT,
 };
 
 #define KC_RESET RESET
@@ -86,35 +86,33 @@ enum {
 #define KC_JP_QUOT JP_QUOT
 #define KC_JP_UNDS LSFT(KC_INT1)
 #define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
+#define KC_LOWER_IMEOFF TD(TD_LOWER_IMEOFF)
+#define KC_SALT TD(TD_SALT)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
         TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, JP_UNDS,
-        OSMOD, LOWER, SPC, ENT, RAISE_IMEON, RALT),
+        OSMOD, LOWER_IMEOFF, SPC, ENT, RAISE_IMEON, SALT),
 
     [_LOWER] = LAYOUT_kc(
         ESC, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
-        _____, LOWER, SPC, ENT, _____, IMEON),
+        _____, _____, _____, _____, _____, _____),
     // !"#$%&'()0=^~\`[]
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
         _____, XXXXX, XXXXX, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, XXXXX, XXXXX,
         _____, EXLM, XXXXX, HASH, DLR, PERC, CIRC, AMPR, XXXXX, XXXXX, XXXXX, XXXXX,
-        IMEOFF, LOWER, SPC, ENT, _____, _____),
+        _____, _____, _____, _____, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
         _____, LRST, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
-        _____, LOWER, SPC, ENT, _____, _____)};
-
-qk_tap_dance_action_t tap_dance_actions[] = {
-  //[TD_LOWER_IMEOFF] = 
-  [TD_RAISE_IMEON] = ACTION_TAP_DANCE_DOUBLE(KC_C, KC_B)
+        _____, _____, _____, _____, _____, _____),
 };
 
 int RGB_current_mode;
@@ -204,6 +202,49 @@ void iota_gfx_task_user(void)
   matrix_update(&display, &matrix);
 }
 #endif //SSD1306OLED
+
+void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data ) {
+  if (state->count == 1) {
+    layer_on(_RAISE);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  } else {
+    register_code(KC_INT4);
+  }
+}
+
+void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data ) {
+  if (state->count == 1) {
+    layer_off(_RAISE);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  } else {
+    unregister_code(KC_INT4);
+  }
+}
+
+void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data ) {
+  if (state->count == 1) {
+    layer_on(_LOWER);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  } else {
+    register_code(KC_INT5);
+  }
+}
+
+void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data ) {
+  if (state->count == 1) {
+    layer_off(_LOWER);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  } else {
+    unregister_code(KC_INT5);
+  }
+}
+
+qk_tap_dance_action_t tap_dance_actions[] = {
+  //[TD_LOWER_IMEOFF] = 
+  [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
+  [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
+  [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
+};
 
 bool os_depend_key(keyrecord_t *record, uint16_t win_keycode, uint16_t mac_keycode)
 {
