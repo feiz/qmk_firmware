@@ -48,7 +48,8 @@ enum custom_keycodes
   OSMOD,
 };
 
-enum {
+enum
+{
   TD_LOWER_IMEOFF = 0,
   TD_RAISE_IMEON,
   TD_SALT,
@@ -77,13 +78,16 @@ enum {
 #define KC_CTLTB CTL_T(KC_TAB)
 #define KC_GUIEI GUI_T(KC_LANG2)
 #define KC_ALTKN ALT_T(KC_LANG1)
+#define KC_JP_EQ LSFT(KC_MINS)
 #define KC_JP_AT JP_AT
+#define KC_JP_CIRC JP_CIRC
 #define KC_JP_LBRC JP_LBRC
 #define KC_JP_RBRC JP_RBRC
 #define KC_JP_LPRN JP_LPRN
 #define KC_JP_RPRN JP_RPRN
 #define KC_JP_DQT JP_DQT
 #define KC_JP_QUOT JP_QUOT
+#define KC_JP_PIPE LSFT(KC_INT3)
 #define KC_JP_UNDS LSFT(KC_INT1)
 #define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
 #define KC_LOWER_IMEOFF TD(TD_LOWER_IMEOFF)
@@ -97,15 +101,15 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         OSMOD, LOWER_IMEOFF, SPC, ENT, RAISE_IMEON, SALT),
 
     [_LOWER] = LAYOUT_kc(
-        ESC, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
+        _____, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
         _____, _____, _____, _____, _____, _____),
-    // !"#$%&'()0=^~\`[]
+
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
-        _____, XXXXX, XXXXX, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, XXXXX, XXXXX,
-        _____, EXLM, XXXXX, HASH, DLR, PERC, CIRC, AMPR, XXXXX, XXXXX, XXXXX, XXXXX,
+        _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
+        _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
         _____, _____, _____, _____, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
@@ -203,47 +207,63 @@ void iota_gfx_task_user(void)
 }
 #endif //SSD1306OLED
 
-void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data ) {
-  if (state->count == 1) {
+void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
     layer_on(_RAISE);
     update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  } else {
+  }
+  else
+  {
     register_code(KC_INT4);
   }
 }
 
-void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data ) {
-  if (state->count == 1) {
+void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
     layer_off(_RAISE);
     update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  } else {
+  }
+  else
+  {
     unregister_code(KC_INT4);
   }
 }
 
-void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data ) {
-  if (state->count == 1) {
+void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
     layer_on(_LOWER);
     update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  } else {
+  }
+  else
+  {
     register_code(KC_INT5);
   }
 }
 
-void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data ) {
-  if (state->count == 1) {
+void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
     layer_off(_LOWER);
     update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  } else {
+  }
+  else
+  {
     unregister_code(KC_INT5);
   }
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-  //[TD_LOWER_IMEOFF] = 
-  [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
-  [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
-  [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
+    //[TD_LOWER_IMEOFF] =
+    [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
+    [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
+    [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
 };
 
 bool os_depend_key(keyrecord_t *record, uint16_t win_keycode, uint16_t mac_keycode)
