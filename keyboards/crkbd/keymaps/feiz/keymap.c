@@ -31,7 +31,7 @@ extern uint8_t is_master;
 #define _MAC 0
 #define _WIN 1
 
-int current_os = _MAC;
+bool macmode = true;
 
 enum custom_keycodes
 {
@@ -92,6 +92,8 @@ enum
 #define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
 #define KC_LOWER_IMEOFF TD(TD_LOWER_IMEOFF)
 #define KC_SALT TD(TD_SALT)
+
+#define OS_DEPEND_KEY(WINKEY, MACKEY) (macmode ? MACKEY : WINKEY)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
@@ -216,7 +218,7 @@ void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data)
   }
   else
   {
-    register_code(KC_INT4);
+    register_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
   }
 }
 
@@ -229,7 +231,7 @@ void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data)
   }
   else
   {
-    unregister_code(KC_INT4);
+    unregister_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
   }
 }
 
@@ -242,7 +244,7 @@ void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data)
   }
   else
   {
-    register_code(KC_INT5);
+    register_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
   }
 }
 
@@ -255,12 +257,11 @@ void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data)
   }
   else
   {
-    unregister_code(KC_INT5);
+    unregister_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
   }
 }
 
 qk_tap_dance_action_t tap_dance_actions[] = {
-    //[TD_LOWER_IMEOFF] =
     [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
     [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
     [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
@@ -268,19 +269,7 @@ qk_tap_dance_action_t tap_dance_actions[] = {
 
 bool os_depend_key(keyrecord_t *record, uint16_t win_keycode, uint16_t mac_keycode)
 {
-  uint16_t kc;
-  if (current_os == _WIN)
-  {
-    kc = win_keycode;
-  }
-  else if (current_os == _MAC)
-  {
-    kc = mac_keycode;
-  }
-  else
-  {
-    return true;
-  }
+  uint16_t kc = OS_DEPEND_KEY(win_keycode, mac_keycode);
 
   if (record->event.pressed)
   {
@@ -348,26 +337,28 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
   case WINMODE:
     if (record->event.pressed)
     {
-      current_os = _WIN;
+      macmode = false;
     }
     return false;
     break;
   case MACMODE:
     if (record->event.pressed)
     {
-      current_os = _MAC;
+      macmode = true;
     }
     return false;
     break;
   case OSMOD: // command or ctrl
     os_depend_key(record, KC_LCTRL, KC_LGUI);
     break;
+    /*
   case IMEON: // henkan or kana
     return os_depend_key(record, KC_INT4, KC_LANG1);
     break;
   case IMEOFF: // muhenkan or eisuu
     return os_depend_key(record, KC_INT5, KC_LANG2);
     break;
+  */
 
   case RGB_MOD:
 #ifdef RGBLIGHT_ENABLE
