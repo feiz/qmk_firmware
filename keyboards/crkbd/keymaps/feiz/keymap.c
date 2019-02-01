@@ -109,7 +109,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, _____, _____, _____, _____, _____),
 
     [_RAISE] = LAYOUT_kc(
-        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, MINS,
+        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, BSLS,
         _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
         _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
         _____, _____, _____, _____, _____, _____),
