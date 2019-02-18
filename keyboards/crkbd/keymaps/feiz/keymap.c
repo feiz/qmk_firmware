@@ -23,13 +23,10 @@ extern uint8_t is_master;
 // Layer names don't all need to be of the same length, obviously, and you can also skip them
 // entirely and just use numbers.
 #define _BASE 0
+#define _WIN 1
 #define _LOWER 3
 #define _RAISE 4
 #define _ADJUST 16
-
-// os mode values
-#define _MAC 0
-#define _WIN 1
 
 bool macmode = true;
 
@@ -41,28 +38,16 @@ enum custom_keycodes
   ADJUST,
   BACKLIT,
   RGBRST,
-  WINMODE,
-  MACMODE,
-  IMEON,
-  IMEOFF,
-  OSMOD,
 };
 
 enum
 {
-  TD_LOWER_IMEOFF = 0,
-  TD_RAISE_IMEON,
-  TD_SALT,
-  TD_IMEON_RALT,
-  TD_IMEOFF_OSMOD,
-  TD_LOWER_OSMOD,
+   TD_SALT = 0,
 };
 
 #define KC_RESET RESET
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
-#define KC_WINMODE WINMODE
-#define KC_MACMODE MACMODE
 #define KC_IMEON IMEON
 #define KC_IMEOFF IMEOFF
 #define KC_OSMOD OSMOD
@@ -92,33 +77,40 @@ enum
 #define KC_JP_QUOT JP_QUOT
 #define KC_JP_PIPE LSFT(KC_INT3)
 #define KC_JP_UNDS LSFT(KC_INT1)
-#define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
-#define KC_LOWER_IMEOFF TD(TD_LOWER_IMEOFF)
 #define KC_SALT TD(TD_SALT)
-#define KC_IMEON_RALT TD(TD_IMEON_RALT)
-#define KC_IMEOFF_OSMOD TD(TD_IMEOFF_OSMOD)
-#define KC_LOWER_OSMOD TD(TD_LOWER_OSMOD)
+#define KC_ONSYM_M LT(_RAISE, KC_LANG1)
+#define KC_OFFMOV_M LT(_LOWER, KC_LANG2)
+#define KC_ONSYM_W LT(_RAISE, KC_INT4)
+#define KC_OFFMOV_W LT(_LOWER, KC_INT5)
+#define KC_WINMODE DF(_WIN)
+#define KC_MACMODE DF(_BASE)
 
-#define OS_DEPEND_KEY(WINKEY, MACKEY) (macmode ? MACKEY : WINKEY)
+
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
     [_BASE] = LAYOUT_kc(
         TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, JP_UNDS,
-        IMEOFF, LOWER_OSMOD, SPC, ENT, RAISE, IMEON_RALT),
+        LGUI, OFFMOV_M, SPC, ENT, ONSYM_M, SALT),
+
+    [_WIN] = LAYOUT_kc(
+        _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____,
+        _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____,
+        _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____,
+        LCTRL, OFFMOV_W, _____, _____, ONSYM_W, _____),
 
     [_LOWER] = LAYOUT_kc(
         _____, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
-        _____, _____, _____, _____, _____, _____),
+        RESET, _____, WINMODE, _____, _____, _____),
 
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, JYEN,
         _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
         _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
-        _____, _____, _____, _____, _____, _____),
+        _____, _____, _____, MACMODE, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
         _____, LRST, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
@@ -215,167 +207,9 @@ void iota_gfx_task_user(void)
 }
 #endif //SSD1306OLED
 
-
-/* raise_imeon */
-
-void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_on(_RAISE);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    register_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
-  }
-}
-
-void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_off(_RAISE);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    unregister_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
-  }
-}
-
-/* lower_imeoff */
-
-void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_on(_LOWER);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    register_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
-  }
-}
-
-void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_off(_LOWER);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    unregister_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
-  }
-}
-
-/* imeon_ralt */
-
-void dance_imeon_ralt_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    register_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
-  }
-  else
-  {
-    register_code(KC_RALT);
-  }
-}
-
-void dance_imeon_ralt_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    unregister_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
-  }
-  else
-  {
-    unregister_code(KC_RALT);
-  }
-}
-
-/* imeoff_osmod */
-
-void dance_imeoff_osmod_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    register_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
-  }
-  else
-  {
-  }
-}
-
-void dance_imeoff_osmod_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    unregister_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
-  }
-  else
-  {
-    unregister_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
-  }
-}
-
-/* lower_osmod */
-
-void dance_lower_osmod_finished(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_on(_LOWER);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    register_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
-  }
-}
-
-void dance_lower_osmod_reset(qk_tap_dance_state_t *state, void *user_data)
-{
-  if (state->count == 1)
-  {
-    layer_off(_LOWER);
-    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
-  }
-  else
-  {
-    unregister_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
-  }
-}
-
 qk_tap_dance_action_t tap_dance_actions[] = {
-    [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
-    [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
-    [TD_IMEON_RALT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_imeon_ralt_finished, dance_imeon_ralt_reset),
-    [TD_IMEOFF_OSMOD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_imeoff_osmod_finished, dance_imeoff_osmod_reset),
-    [TD_LOWER_OSMOD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_osmod_finished, dance_lower_osmod_reset),
     [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
 };
-
-bool os_depend_key(keyrecord_t *record, uint16_t win_keycode, uint16_t mac_keycode)
-{
-  uint16_t kc = OS_DEPEND_KEY(win_keycode, mac_keycode);
-
-  if (record->event.pressed)
-  {
-    register_code(kc);
-    return false;
-  }
-  else
-  {
-    unregister_code(kc);
-    return false;
-  }
-  return true;
-}
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record)
 {
@@ -426,29 +260,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
       layer_off(_ADJUST);
     }
     return false;
-    break;
-  case WINMODE:
-    if (record->event.pressed)
-    {
-      macmode = false;
-    }
-    return false;
-    break;
-  case MACMODE:
-    if (record->event.pressed)
-    {
-      macmode = true;
-    }
-    return false;
-    break;
-  case OSMOD: // command or ctrl
-    os_depend_key(record, KC_LCTRL, KC_LGUI);
-    break;
-  case IMEON: // henkan or kana
-    return os_depend_key(record, KC_INT4, KC_LANG1);
-    break;
-  case IMEOFF: // muhenkan or eisuu
-    return os_depend_key(record, KC_INT5, KC_LANG2);
     break;
 
   case RGB_MOD:
