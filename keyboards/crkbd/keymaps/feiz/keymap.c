@@ -53,6 +53,9 @@ enum
   TD_LOWER_IMEOFF = 0,
   TD_RAISE_IMEON,
   TD_SALT,
+  TD_IMEON_RALT,
+  TD_IMEOFF_OSMOD,
+  TD_LOWER_OSMOD,
 };
 
 #define KC_RESET RESET
@@ -92,6 +95,9 @@ enum
 #define KC_RAISE_IMEON TD(TD_RAISE_IMEON)
 #define KC_LOWER_IMEOFF TD(TD_LOWER_IMEOFF)
 #define KC_SALT TD(TD_SALT)
+#define KC_IMEON_RALT TD(TD_IMEON_RALT)
+#define KC_IMEOFF_OSMOD TD(TD_IMEOFF_OSMOD)
+#define KC_LOWER_OSMOD TD(TD_LOWER_OSMOD)
 
 #define OS_DEPEND_KEY(WINKEY, MACKEY) (macmode ? MACKEY : WINKEY)
 
@@ -100,7 +106,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         TAB, Q, W, E, R, T, Y, U, I, O, P, JP_AT,
         CTLTB, A, S, D, F, G, H, J, K, L, SCLN, QUOT,
         LSFT, Z, X, C, V, B, N, M, COMM, DOT, SLSH, JP_UNDS,
-        OSMOD, LOWER_IMEOFF, SPC, ENT, RAISE_IMEON, SALT),
+        IMEOFF, LOWER_OSMOD, SPC, ENT, RAISE, IMEON_RALT),
 
     [_LOWER] = LAYOUT_kc(
         _____, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
@@ -209,6 +215,9 @@ void iota_gfx_task_user(void)
 }
 #endif //SSD1306OLED
 
+
+/* raise_imeon */
+
 void dance_raise_imeon_finished(qk_tap_dance_state_t *state, void *user_data)
 {
   if (state->count == 1)
@@ -234,6 +243,8 @@ void dance_raise_imeon_reset(qk_tap_dance_state_t *state, void *user_data)
     unregister_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
   }
 }
+
+/* lower_imeoff */
 
 void dance_lower_imeoff_finished(qk_tap_dance_state_t *state, void *user_data)
 {
@@ -261,9 +272,91 @@ void dance_lower_imeoff_reset(qk_tap_dance_state_t *state, void *user_data)
   }
 }
 
+/* imeon_ralt */
+
+void dance_imeon_ralt_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    register_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
+  }
+  else
+  {
+    register_code(KC_RALT);
+  }
+}
+
+void dance_imeon_ralt_reset(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    unregister_code(OS_DEPEND_KEY(KC_INT4, KC_LANG1));
+  }
+  else
+  {
+    unregister_code(KC_RALT);
+  }
+}
+
+/* imeoff_osmod */
+
+void dance_imeoff_osmod_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    register_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
+  }
+  else
+  {
+  }
+}
+
+void dance_imeoff_osmod_reset(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    unregister_code(OS_DEPEND_KEY(KC_INT5, KC_LANG2));
+  }
+  else
+  {
+    unregister_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
+  }
+}
+
+/* lower_osmod */
+
+void dance_lower_osmod_finished(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    layer_on(_LOWER);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  }
+  else
+  {
+    register_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
+  }
+}
+
+void dance_lower_osmod_reset(qk_tap_dance_state_t *state, void *user_data)
+{
+  if (state->count == 1)
+  {
+    layer_off(_LOWER);
+    update_tri_layer_RGB(_LOWER, _RAISE, _ADJUST);
+  }
+  else
+  {
+    unregister_code(OS_DEPEND_KEY(KC_LCTRL, KC_LGUI));
+  }
+}
+
 qk_tap_dance_action_t tap_dance_actions[] = {
     [TD_RAISE_IMEON] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_raise_imeon_finished, dance_raise_imeon_reset),
     [TD_LOWER_IMEOFF] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_imeoff_finished, dance_lower_imeoff_reset),
+    [TD_IMEON_RALT] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_imeon_ralt_finished, dance_imeon_ralt_reset),
+    [TD_IMEOFF_OSMOD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_imeoff_osmod_finished, dance_imeoff_osmod_reset),
+    [TD_LOWER_OSMOD] = ACTION_TAP_DANCE_FN_ADVANCED(NULL, dance_lower_osmod_finished, dance_lower_osmod_reset),
     [TD_SALT] = ACTION_TAP_DANCE_DOUBLE(KC_RSFT, KC_RALT),
 };
 
@@ -351,14 +444,12 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record)
   case OSMOD: // command or ctrl
     os_depend_key(record, KC_LCTRL, KC_LGUI);
     break;
-    /*
   case IMEON: // henkan or kana
     return os_depend_key(record, KC_INT4, KC_LANG1);
     break;
   case IMEOFF: // muhenkan or eisuu
     return os_depend_key(record, KC_INT5, KC_LANG2);
     break;
-  */
 
   case RGB_MOD:
 #ifdef RGBLIGHT_ENABLE
