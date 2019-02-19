@@ -43,16 +43,16 @@ enum custom_keycodes
 enum
 {
    TD_SALT = 0,
+   TD_RESET,
 };
 
+// Function
 #define KC_RESET RESET
 #define KC______ KC_TRNS
 #define KC_XXXXX KC_NO
-#define KC_IMEON IMEON
-#define KC_IMEOFF IMEOFF
-#define KC_OSMOD OSMOD
 #define KC_LOWER LOWER
 #define KC_RAISE RAISE
+#define KC_ADJUST ADJUST
 #define KC_RST RESET
 #define KC_LRST RGBRST
 #define KC_LTOG RGB_TOG
@@ -63,9 +63,10 @@ enum
 #define KC_LVAI RGB_VAI
 #define KC_LVAD RGB_VAD
 #define KC_LMOD RGB_MOD
-#define KC_CTLTB CTL_T(KC_TAB)
-#define KC_GUIEI GUI_T(KC_LANG2)
-#define KC_ALTKN ALT_T(KC_LANG1)
+#define KC_WINMODE DF(_WIN)
+#define KC_MACMODE DF(_BASE)
+
+// JP Char
 #define KC_JP_EQ LSFT(KC_MINS)
 #define KC_JP_AT JP_AT
 #define KC_JP_CIRC JP_CIRC
@@ -77,14 +78,17 @@ enum
 #define KC_JP_QUOT JP_QUOT
 #define KC_JP_PIPE LSFT(KC_INT3)
 #define KC_JP_UNDS LSFT(KC_INT1)
+
+// Combination
+#define KC_CTLTB CTL_T(KC_TAB)
+#define KC_GUIEI GUI_T(KC_LANG2)
+#define KC_ALTKN ALT_T(KC_LANG1)
 #define KC_SALT TD(TD_SALT)
+#define KC_TDRST TD(TD_RESET)
 #define KC_ONSYM_M LT(_RAISE, KC_LANG1)
 #define KC_OFFMOV_M LT(_LOWER, KC_LANG2)
 #define KC_ONSYM_W LT(_RAISE, KC_INT4)
 #define KC_OFFMOV_W LT(_LOWER, KC_INT5)
-#define KC_WINMODE DF(_WIN)
-#define KC_MACMODE DF(_BASE)
-
 
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -104,18 +108,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
-        RESET, _____, WINMODE, _____, _____, _____),
+        ADJUST, _____, _____, _____, _____, _____),
 
     [_RAISE] = LAYOUT_kc(
         ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, JYEN,
         _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
         _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
-        _____, _____, _____, MACMODE, _____, _____),
+        _____, _____, _____, _____, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
-        _____, LRST, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
-        _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
-        WINMODE, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, MACMODE,
+        _____, LRST, XXXXX, XXXXX, XXXXX, XXXXX, RESET, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
+        _____, LHUI, LSAI, LVAI, XXXXX, XXXXX, XXXXX, WINMODE, MACMODE, XXXXX, XXXXX, XXXXX,
+        _____, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         _____, _____, _____, _____, _____, _____),
 };
 

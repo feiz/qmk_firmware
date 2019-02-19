@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define USE_SERIAL_PD2
 
 #define TAPPING_FORCE_HOLD
-#define TAPPING_TERM 190
+#define TAPPING_TERM 140
 #define PERMISSIVE_HOLD
 
 #define SSD1306OLED
@@ -47,4 +47,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define MOUSEKEY_DELAY 10
 #define MOUSEKEY_INTERVAL 20
 #define MOUSEKEY_MAX_SPEED 4
-#define MOUSEKEY_TIME_TO_MAX 40
+#define MOUSEKEY_TIME_TO_MAX 30
