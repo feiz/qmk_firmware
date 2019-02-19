@@ -74,10 +74,13 @@ enum
 #define KC_JP_RBRC JP_RBRC
 #define KC_JP_LPRN JP_LPRN
 #define KC_JP_RPRN JP_RPRN
+#define KC_JP_LCBR LSFT(JP_LBRC)
+#define KC_JP_RCBR LSFT(JP_RBRC)
 #define KC_JP_DQT JP_DQT
 #define KC_JP_QUOT JP_QUOT
 #define KC_JP_PIPE LSFT(KC_INT3)
 #define KC_JP_UNDS LSFT(KC_INT1)
+#define KC_JP_AMPR LSFT(KC_6)
 
 // Combination
 #define KC_CTLTB CTL_T(KC_TAB)
@@ -110,10 +113,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, XXXXX, XXXXX, XXXXX, XXXXX, DEL, BSPC, PGDN, PGUP, XXXXX, XXXXX, XXXXX,
         ADJUST, _____, _____, _____, _____, _____),
 
+//    [_RAISE] = LAYOUT_kc(
+//        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, JYEN,
+//        _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
+//        _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
+//        _____, _____, _____, _____, _____, _____),
+
     [_RAISE] = LAYOUT_kc(
-        ESC, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0, JYEN,
-        _____, MINS, JP_EQ, XXXXX, JP_LBRC, JP_LPRN, JP_RPRN, JP_RBRC, JP_QUOT, JP_DQT, JP_CIRC, JP_PIPE,
-        _____, EXLM, JP_DQT, HASH, DLR, PERC, CIRC, AMPR, JP_QUOT, JP_LPRN, JP_RPRN, INT1,
+        ESC, NO, 7, 8, 9, PERC,/**/JP_AMPR, JP_LPRN, JP_RPRN, JP_DQT, NO, JYEN,
+        _____, MINS, 4, 5, 6, 0, /**/HASH, JP_LCBR, JP_RCBR, JP_QUOT, JP_CIRC, JP_PIPE,
+        _____, EXLM, 1, 2, 3, JP_EQ,/**/DLR, JP_LBRC, JP_RBRC, DOT, NO, INT1,
         _____, _____, _____, _____, _____, _____),
 
     [_ADJUST] = LAYOUT_kc(
@@ -122,6 +131,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, LMOD, LHUD, LSAD, LVAD, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX, XXXXX,
         _____, _____, _____, _____, _____, _____),
 };
+
 
 int RGB_current_mode;
 
