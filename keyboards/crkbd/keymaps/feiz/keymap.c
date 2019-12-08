@@ -107,6 +107,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____, _____,
         LCTRL, OFFMOV_W, _____, _____, ONSYM_W, _____),
 
+
     [_LOWER] = LAYOUT_kc(
         _____, XXXXX, MS_ACCEL2, MS_UP, MS_ACCEL0, XXXXX, MS_BTN5, MS_BTN1, MS_BTN2, XXXXX, XXXXX, ESC,
         _____, XXXXX, MS_LEFT, MS_DOWN, MS_RIGHT, XXXXX, LEFT, DOWN, UP, RGHT, XXXXX, XXXXX,
